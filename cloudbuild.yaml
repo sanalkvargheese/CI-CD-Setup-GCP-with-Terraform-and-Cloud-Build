@@ -1,0 +1,17 @@
+steps:
+  - name: 'gcr.io/cloud-builders/git'
+    args: ['push', 'github', '$COMMIT_SHA']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/cloudone-123/frontend-ui:$SHORT_SHA', '/home/sanal_vargheese23/ICA3/react-app']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/cloudone-123/python-app:$SHORT_SHA', '/home/sanal_vargheese23/ICA3/flask-app']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/cloudone-123/frontend-ui:$SHORT_SHA']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/cloudone-123/python-app:$SHORT_SHA']
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/my-react-app-deployment', 'my-react-app=gcr.io/cloudone-123/frontend-ui:$SHORT_SHA', '--namespace=default']
+    env: ['CLOUDSDK_COMPUTE_ZONE=us-central1-a', 'CLOUDSDK_CONTAINER_CLUSTER=clustermicro']
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/my-python-app', 'my-python-app=gcr.io/cloudone-123/python-app:$SHORT_SHA', '--namespace=default']
+    env: ['CLOUDSDK_COMPUTE_ZONE=us-central1-a', 'CLOUDSDK_CONTAINER_CLUSTER=clustermicro']
